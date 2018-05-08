@@ -1,67 +1,4 @@
 
-# coding: utf-8
-
-# Thank you for opening this script!
-# 
-# I have made all efforts to document each and every step involved in the prediction process so that this notebook acts as a good starting point for new Kagglers and new machine learning enthusiasts.
-# 
-# Please **upvote** this kernel so that it reaches the top of the chart and is easily locatable by new users. Your comments on how we can improve this kernel is welcome. Thanks.
-# 
-# My other exploratory studies can be accessed here :
-# https://www.kaggle.com/sharmasanthosh/kernels
-# ***
-# ## Data statistics
-# * Shape
-# * Peek
-# * Description
-# * Skew
-# 
-# ## Transformation
-# * Correction of skew
-# 
-# ## Data Interaction
-# * Correlation
-# * Scatter plot
-# 
-# ## Data Visualization
-# * Box and density plots
-# * Grouping of one hot encoded attributes
-# 
-# ## Data Preparation
-# * One hot encoding of categorical data
-# * Test-train split
-# 
-# ## Evaluation, prediction, and analysis
-# * Linear Regression (Linear algo)
-# * Ridge Regression (Linear algo)
-# * LASSO Linear Regression (Linear algo)
-# * Elastic Net Regression (Linear algo)
-# * KNN (non-linear algo)
-# * CART (non-linear algo)
-# * SVM (Non-linear algo)
-# * Bagged Decision Trees (Bagging)
-# * Random Forest (Bagging)
-# * Extra Trees (Bagging)
-# * AdaBoost (Boosting)
-# * Stochastic Gradient Boosting (Boosting)
-# * MLP (Deep Learning)
-# * XGBoost
-# 
-# ## Make Predictions
-# ***
-
-# ## Load raw data:
-# 
-# Information about all the attributes can be found here:
-# 
-# https://www.kaggle.com/c/allstate-claims-severity/data
-# 
-# Learning: 
-# We need to predict the 'loss' based on the other attributes. Hence, this is a regression problem.
-
-# In[1]:
-
-
 # Supress unnecessary warnings so that presentation looks clean
 import warnings
 warnings.filterwarnings('ignore')
@@ -134,18 +71,6 @@ print(dataset.describe())
 
 print(dataset.skew())
 
-# Values close to 0 show less ske
-# loss shows the highest skew. Let us visualize it
-
-
-# ## Data Visualization
-# * Box and density plots
-
-# In[5]:
-
-
-# We will visualize all the continuous attributes using Violin Plot - a combination of box and density plots
-
 import numpy
 
 #import plotting libraries
@@ -168,42 +93,12 @@ cols=data.columns
 n_cols = 2
 n_rows = 7
 
-#for i in range(n_rows):
-#    fg,ax = plt.subplots(nrows=1,ncols=n_cols,figsize=(12, 8))
-#    for j in range(n_cols):
-#        sns.violinplot(y=cols[i*n_cols+j], data=dataset, ax=ax[j])
-
-
-#cont1 has many values close to 0.5
-#cont2 has a pattern where there a several spikes at specific points
-#cont5 has many values near 0.3
-#cont14 has a distinct pattern. 0.22 and 0.82 have a lot of concentration
-#loss distribution must be converted to normal
-
-
-# ## Data Transformation
-# * Skew correction
-
-# In[12]:
-
 
 #log1p function applies log(1+x) to all elements of the column
 dataset["loss"] = numpy.log1p(dataset["loss"])
 #visualize the transformed column
 sns.violinplot(data=dataset,y="loss")  
 plt.show()
-
-#Plot shows that skew is corrected to a large extent
-
-
-# ## Data Interaction
-# * Correlation
-
-# In[13]:
-
-
-# Correlation tells relation between two attributes.
-# Correlation requires continous data. Hence, ignore categorical data
 
 # Calculates pearson co-efficient for all combinations
 data_corr = data.corr()
@@ -230,16 +125,6 @@ for v,i,j in s_corr_list:
 # Strong correlation is observed between the following pairs
 # This represents an opportunity to reduce the feature set through transformations such as PCA
 
-
-# ## Data Visualization
-# * Categorical attributes
-
-# In[15]:
-
-
-# Count of each label in each category
-
-#names of all the columns
 cols = dataset.columns
 
 #Plot count plot for all attributes in a 29x4 grid
@@ -375,60 +260,6 @@ print([n, i_cols])
 
 
 # ## Evaluation, prediction, and analysis
-# * Linear Regression (Linear algo)
-
-# In[59]:
-
-
-#Evaluation of various combinations of LinearRegression
-
-#Import the library
-from sklearn.linear_model import LinearRegression
-
-#uncomment the below lines if you want to run the algo
-##Set the base model
-model = LinearRegression(n_jobs=-1)
-algo = "LR"
-
-##Accuracy of the model using all features
-cnt_loop = 0;
-for name,i_cols_list in X_all:
-    #print(name)
-    #print(i_cols_list)
-    model.fit(X_train[:,i_cols_list],Y_train)
-    y_true = numpy.expm1(Y_val)
-    y_pred = numpy.expm1(model.predict(X_val[:,i_cols_list]))
-    print(y_true.shape)
-    print(y_pred.shape)
-    print(y_true)
-    print(y_pred)
-    
-    
-    result = mean_absolute_error(y_true, y_pred)
-    print(result)
-    mae.append(result)
-    print(name + " %s" % result)
-    print(cnt_loop)
-    cnt_loop = cnt_loop+1
-comb.append(algo)
-
-#Result obtained after running the algo. Comment the below two lines if you want to run the algo
-#mae.append(1278)
-#comb.append("LR" )    
-
-##Plot the MAE of all combinations
-#fig, ax = plt.subplots()
-#plt.plot(mae)
-##Set the tick names to names of combinations
-#ax.set_xticks(range(len(comb)))
-#ax.set_xticklabels(comb,rotation='vertical')
-##Plot the accuracy for all combinations
-#plt.show()    
-
-#MAE achieved is 1278
-
-
-# ## Evaluation, prediction, and analysis
 # * LASSO Linear Regression (Linear algo)
 
 # In[63]:
@@ -477,62 +308,6 @@ plt.show()
 
 #High computation time
 #Best estimated performance is 1262.5 for alpha = 0.001
-
-
-# ## Evaluation, prediction, and analysis
-# * Random Forest (Bagging)
-
-# In[64]:
-
-
-#Evaluation of various combinations of RandomForest
-
-#Import the library
-from sklearn.ensemble import RandomForestRegressor
-
-#Add the n_estimators value to the below list if you want to run the algo
-# dataset_encoded.shape: (188318, 1191) 
-n_list = numpy.array([30, 50, 70, 100, 120, 150])
-
-for n_estimators in n_list:
-    #Set the base model
-    model = RandomForestRegressor(n_jobs=-1,n_estimators=n_estimators,random_state=seed)
-    
-    algo = "RF"
-
-    #Accuracy of the model using all features
-    for name,i_cols_list in X_all:
-        model.fit(X_train[:,i_cols_list],Y_train)
-        result = mean_absolute_error(numpy.expm1(Y_val), numpy.expm1(model.predict(X_val[:,i_cols_list])))
-        mae.append(result)
-        print(name + " %s" % result)
-        
-    comb.append(algo + " %s" % n_estimators )
-
-if (len(n_list)==0):
-    mae.append(1213)
-    comb.append("RF" + " %s" % 50 )    
-    
-print(n_list.shape)
-##Set figure size
-plt.rc("figure", figsize=(25, 10))
-
-##Plot the MAE of all combinations
-fig, ax = plt.subplots()
-plt.plot(mae)
-##Set the tick names to names of combinations
-ax.set_xticks(range(len(comb)))
-ax.set_xticklabels(comb,rotation='vertical')
-##Plot the accuracy for all combinations
-plt.show()    
-
-#Best estimated performance is 1213 when the number of estimators is 50
-
-
-# ## Evaluation, prediction, and analysis
-# * XGBoost
-
-# In[ ]:
 
 
 #Evaluation of various combinations of XGB
